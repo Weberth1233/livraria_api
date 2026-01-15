@@ -1,9 +1,11 @@
 package com.weberth.libraryapi.service;
 
+import com.weberth.libraryapi.controller.dto.AutorDTO;
 import com.weberth.libraryapi.model.Autor;
 import com.weberth.libraryapi.repository.AutorRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -26,6 +28,19 @@ public class AutorService {
 
     public void deletar(Autor autor){
         repository.delete(autor);
+    }
+
+    public List<Autor> pesquisar(String nome, String nacionalidade){
+        if(nome != null && nacionalidade != null){
+            return repository.findByNomeAndNacionalidade(nome, nacionalidade);
+        }
+        if(nome != null){
+            return repository.findByNome(nome);
+        }
+        if(nacionalidade != null){
+            return repository.findByNacionalidade(nacionalidade);
+        }
+        return repository.findAll();
     }
 
 }
