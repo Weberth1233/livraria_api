@@ -7,8 +7,11 @@ import com.weberth.libraryapi.repository.AutorRepository;
 import com.weberth.libraryapi.repository.LivroRepository;
 import com.weberth.libraryapi.validator.AutorValidator;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -19,7 +22,7 @@ public class AutorService {
 
     private final AutorRepository repository;
     private final AutorValidator validator;
-    private LivroRepository livroRepository;
+    private final LivroRepository livroRepository;
 
 //    public AutorService(AutorRepository repository, AutorValidator validator, LivroRepository livroRepository) {
 //        this.repository = repository;
@@ -64,6 +67,19 @@ public class AutorService {
             return repository.findByNacionalidade(nacionalidade);
         }
         return repository.findAll();
+    }
+
+    public List<Autor> pesquisarByExample(String nome, String nacionalidade){
+        var autor = new Autor();
+        autor.setNome(nome);
+        autor.setNacionalidade(nacionalidade);
+        //Configurando pesquisa - ignorando letra maisculas, campos e verificando se contem o texto digitado da pesquisa para busca no banco
+        ExampleMatcher matcher = ExampleMatcher.matching().withIgnorePaths("id", "dataNascimento", "dataCadastro").
+                withIgnoreNullValues().
+                withIgnoreCase().withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING);
+        Example<Autor> autorExample = Example.of(autor, matcher);
+        return  repository.findAll(autorExample);
+
     }
 
     public boolean possuiLivro(Autor autor){

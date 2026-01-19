@@ -82,7 +82,7 @@ public class AutorController {
     public ResponseEntity<List<AutorDTO>> pesquisar(
             @RequestParam(value = "nome", required = false) String nome,
             @RequestParam(value = "nacionalidade", required = false) String nacionalidade){
-        List<Autor> resultado = service.pesquisar(nome, nacionalidade);
+        List<Autor> resultado = service.pesquisarByExample(nome, nacionalidade);
 
         //Converter uma lista de autor para autordto
         List<AutorDTO> lista = resultado.
