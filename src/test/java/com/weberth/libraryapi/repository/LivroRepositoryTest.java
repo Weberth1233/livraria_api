@@ -23,16 +23,16 @@ public class LivroRepositoryTest {
     @Autowired
     AutorRepository autorRepository;
 
-  //  @Test
+  @Test
     void salvarTest(){
         Livro livro = new Livro();
         livro.setIsbn("90887-84874");
         livro.setPreco(BigDecimal.valueOf(100));
         livro.setGenero(GeneroLivro.FICCAO);
-        livro.setTitulo("Outro Livro");
+        livro.setTitulo("Harry Potter 2");
         livro.setDataPublicacao(LocalDate.of(1980, 1, 2));
 
-        Autor autor = autorRepository.findById(UUID.fromString("c7234b31-aace-42de-bbb5-1bc4dc91b3b6")).orElse(null);
+        Autor autor = autorRepository.findById(UUID.fromString("32434550-d644-4689-baae-c6093474423a")).orElse(null);
         livro.setAutor(autor);
 
         repository.save(livro);
