@@ -5,6 +5,7 @@ import com.weberth.libraryapi.repository.LivroRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -20,5 +21,9 @@ public class LivroService {
 
     public Optional<Livro> obterPorId(UUID id){
         return repository.findById(id);
+    }
+
+    public void deletarLivro(Livro livro){
+        repository.delete(livro);
     }
 }
