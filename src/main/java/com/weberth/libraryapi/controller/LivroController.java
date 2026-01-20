@@ -2,6 +2,7 @@ package com.weberth.libraryapi.controller;
 
 import com.weberth.libraryapi.controller.dto.CadastroLivroDTO;
 import com.weberth.libraryapi.controller.dto.ErrorResposta;
+import com.weberth.libraryapi.controller.dto.ResultadoPesquisaLivroDTO;
 import com.weberth.libraryapi.controller.mappers.LivroMapper;
 import com.weberth.libraryapi.exceptions.RegistroDuplicadoException;
 import com.weberth.libraryapi.model.Livro;
@@ -9,12 +10,10 @@ import com.weberth.libraryapi.service.LivroService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("livros")
@@ -34,4 +33,14 @@ public class LivroController implements GenericController {
         //retornar codigo created com header location
         return ResponseEntity.created(url).build();
     }
+
+    @GetMapping("{id}")
+    public ResponseEntity<ResultadoPesquisaLivroDTO> obterDetalhes(
+            @PathVariable("id") String id) {
+        return service.obterPorId(UUID.fromString(id)).map(livro -> {
+            var dto = mapper.toDTO(livro);
+            return ResponseEntity.ok(dto);
+        }).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
 }
