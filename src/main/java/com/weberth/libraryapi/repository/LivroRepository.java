@@ -5,6 +5,7 @@ import com.weberth.libraryapi.model.GeneroLivro;
 import com.weberth.libraryapi.model.Livro;
 import lombok.Locked;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -15,7 +16,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
-public interface LivroRepository  extends JpaRepository<Livro, UUID> {
+public interface LivroRepository  extends JpaRepository<Livro, UUID>, JpaSpecificationExecutor<Livro> {
 
     // select * from livro where id_autor = id
     List<Livro> findByAutor(Autor autor);

@@ -5,6 +5,7 @@ import com.weberth.libraryapi.controller.dto.ErrorResposta;
 import com.weberth.libraryapi.controller.dto.ResultadoPesquisaLivroDTO;
 import com.weberth.libraryapi.controller.mappers.LivroMapper;
 import com.weberth.libraryapi.exceptions.RegistroDuplicadoException;
+import com.weberth.libraryapi.model.GeneroLivro;
 import com.weberth.libraryapi.model.Livro;
 import com.weberth.libraryapi.service.LivroService;
 import jakarta.validation.Valid;
@@ -13,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -51,5 +53,21 @@ public class LivroController implements GenericController {
                     service.deletarLivro(livro);
                     return ResponseEntity.noContent().build();
                 }).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @GetMapping
+    public ResponseEntity<List<ResultadoPesquisaLivroDTO>> pesquisa(
+            @RequestParam(value = "isbn", required = false) String isbn,
+            @RequestParam(value = "titulo", required = false) String titulo,
+            @RequestParam(value = "nomeAutor", required = false) String nomeAutor,
+            @RequestParam(value = "genero", required = false) GeneroLivro genero,
+            @RequestParam(value = "ano-publicacao", required = false) Integer anoPublicacao
+    ){
+        var resultado = service.pesquisa(isbn, titulo, nomeAutor, genero, anoPublicacao);
+        var lista = resultado.
+                stream().
+                map(mapper::toDTO).
+                toList();
+        return ResponseEntity.ok(lista);
     }
 }

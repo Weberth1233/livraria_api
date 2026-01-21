@@ -1,8 +1,11 @@
 package com.weberth.libraryapi.service;
 
+import com.weberth.libraryapi.model.GeneroLivro;
 import com.weberth.libraryapi.model.Livro;
 import com.weberth.libraryapi.repository.LivroRepository;
+import com.weberth.libraryapi.repository.specs.LivroSpecs;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,5 +28,29 @@ public class LivroService {
 
     public void deletarLivro(Livro livro){
         repository.delete(livro);
+    }
+
+    public List<Livro> pesquisa(String isbn,String titulo, String nomeAutor, GeneroLivro genero, Integer anoPublicacao){
+//        Specification<Livro> specs = null;
+        //select * from livro where 0 = 0
+        Specification<Livro> specs = Specification.where(((root, query, cb) -> cb.conjunction() ));
+        if(isbn != null){
+            specs = specs.and(LivroSpecs.isbnEqual(isbn));
+        }
+        if(titulo != null){
+            specs = specs.and(LivroSpecs.tituloLike(titulo));
+        }
+        if(genero != null){
+            specs = specs.and(LivroSpecs.generoEqual(genero));
+        }
+        if(anoPublicacao != null){
+            specs = specs.and(LivroSpecs.anoPublicacaoEqual(anoPublicacao));
+        }
+        if(nomeAutor != null){
+            specs = specs.and(LivroSpecs.NomeAutorLike(nomeAutor));
+
+        }
+        return repository.findAll(specs);
+
     }
 }
