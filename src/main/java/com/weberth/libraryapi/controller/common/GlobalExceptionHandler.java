@@ -5,7 +5,7 @@ import com.weberth.libraryapi.controller.dto.ErrorResposta;
 import com.weberth.libraryapi.exceptions.CampoInvalidoException;
 import com.weberth.libraryapi.exceptions.OperacaoNaoPermitidaException;
 import com.weberth.libraryapi.exceptions.RegistroDuplicadoException;
-import lombok.val;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;

@@ -6,6 +6,9 @@ import com.weberth.libraryapi.repository.LivroRepository;
 import com.weberth.libraryapi.repository.specs.LivroSpecs;
 import com.weberth.libraryapi.validator.LivroValidator;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -34,7 +37,7 @@ public class LivroService {
         repository.delete(livro);
     }
 
-    public List<Livro> pesquisa(String isbn,String titulo, String nomeAutor, GeneroLivro genero, Integer anoPublicacao){
+    public Page<Livro> pesquisa(String isbn, String titulo, String nomeAutor, GeneroLivro genero, Integer anoPublicacao, Integer pagina, Integer tamanhoPagina){
 //        Specification<Livro> specs = null;
         //select * from livro where 0 = 0
         Specification<Livro> specs = Specification.where(((root, query, cb) -> cb.conjunction() ));
@@ -54,7 +57,8 @@ public class LivroService {
             specs = specs.and(LivroSpecs.NomeAutorLike(nomeAutor));
 
         }
-        return repository.findAll(specs);
+        Pageable pageRequest = PageRequest.of(pagina, tamanhoPagina);
+        return repository.findAll(specs, pageRequest);
     }
 
     public void atualizar(Livro livro){
