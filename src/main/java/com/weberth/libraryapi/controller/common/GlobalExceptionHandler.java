@@ -2,8 +2,10 @@ package com.weberth.libraryapi.controller.common;
 
 import com.weberth.libraryapi.controller.dto.ErroCampo;
 import com.weberth.libraryapi.controller.dto.ErrorResposta;
+import com.weberth.libraryapi.exceptions.CampoInvalidoException;
 import com.weberth.libraryapi.exceptions.OperacaoNaoPermitidaException;
 import com.weberth.libraryapi.exceptions.RegistroDuplicadoException;
+import lombok.val;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -38,6 +40,16 @@ public class GlobalExceptionHandler {
         return ErrorResposta.respostaPadrao(e.getMessage());
     }
 
+    @ExceptionHandler(CampoInvalidoException.class)
+    @ResponseStatus(HttpStatus.UNPROCESSABLE_CONTENT)
+    public ErrorResposta handleCampoInvalidoException(CampoInvalidoException e){
+        return new ErrorResposta
+                (HttpStatus.UNPROCESSABLE_CONTENT.value(),
+                        "Erro de validação!",
+                        List.of(new ErroCampo(e.getCampo(), e.getMessage())));
+
+    }
+
     @ExceptionHandler(RuntimeException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResposta handleErrosNaoTratados(RuntimeException e){
@@ -45,6 +57,5 @@ public class GlobalExceptionHandler {
         System.out.println(e);
         return new ErrorResposta(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Ocorreu um erro inesperado. Entre em contato com a administração",List.of());
     }
-
 
 }

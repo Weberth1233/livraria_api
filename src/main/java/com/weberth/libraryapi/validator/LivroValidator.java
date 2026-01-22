@@ -1,5 +1,6 @@
 package com.weberth.libraryapi.validator;
 
+import com.weberth.libraryapi.exceptions.CampoInvalidoException;
 import com.weberth.libraryapi.exceptions.RegistroDuplicadoException;
 import com.weberth.libraryapi.model.Livro;
 import com.weberth.libraryapi.repository.LivroRepository;
@@ -11,12 +12,24 @@ import java.util.Optional;
 @Component
 @RequiredArgsConstructor
 public class LivroValidator {
+    private static final int ANO_EXIGENCIA_PRECO = 2020;
+
     private final LivroRepository repository;
 
     public void validar(Livro livro){
         if(existeLivroComIsbn(livro)){
             throw new RegistroDuplicadoException("ISBN já cadastrado!");
         }
+        if(isPrecoObrigatorioNulo(livro)){
+            throw new CampoInvalidoException("preco", "Para livros com ano de publicação a partir de 2020, o preço é obrigatório!");
+        }
+
+    }
+
+    private boolean isPrecoObrigatorioNulo(Livro livro) {
+        //Se o preço é igual a null e o ano é menor igual a 2020 eu exigo o preço do livro, se os dois forem verdadeiro é true, se não false
+        return livro.getPreco() == null &&
+                livro.getDataPublicacao().getYear() >= ANO_EXIGENCIA_PRECO;
     }
 
     private boolean existeLivroComIsbn(Livro livro){
