@@ -4,6 +4,7 @@ import com.weberth.libraryapi.model.GeneroLivro;
 import com.weberth.libraryapi.model.Livro;
 import com.weberth.libraryapi.repository.LivroRepository;
 import com.weberth.libraryapi.repository.specs.LivroSpecs;
+import com.weberth.libraryapi.validator.LivroValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -17,8 +18,11 @@ import java.util.UUID;
 public class LivroService {
 
     private final LivroRepository repository;
+    private final LivroValidator validator;
+
 
     public Livro salvar(Livro livro){
+        validator.validar(livro);
         return repository.save(livro);
     }
 
@@ -57,6 +61,7 @@ public class LivroService {
         if(livro.getId() == null){
             throw new IllegalArgumentException("Para atualizar é necessário que o livro já esteja salvo na base.");
         }
+        validator.validar(livro);
         repository.save(livro);
     }
 }
