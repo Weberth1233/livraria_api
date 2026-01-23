@@ -1,17 +1,15 @@
 package com.weberth.libraryapi.controller;
 
 import com.weberth.libraryapi.controller.dto.AutorDTO;
-import com.weberth.libraryapi.controller.dto.ErrorResposta;
 import com.weberth.libraryapi.controller.mappers.AutorMapper;
-import com.weberth.libraryapi.exceptions.OperacaoNaoPermitidaException;
-import com.weberth.libraryapi.exceptions.RegistroDuplicadoException;
+
 import com.weberth.libraryapi.model.Autor;
 import com.weberth.libraryapi.service.AutorService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
@@ -19,17 +17,16 @@ import java.util.Optional;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/autores")
+@RequestMapping("autores")
 @RequiredArgsConstructor
 public class AutorController implements GenericController {
 
     private final AutorService service;
     private final AutorMapper mapper;
-//    public AutorController(AutorService service){
-//        this.service =service;
-//    }
 
     @PostMapping
+//   APENAS O USUARIO COM O ROLE GERENTE PODE SALVAR
+    @PreAuthorize("hasRole('GERENTE')")
     public ResponseEntity<Object> salvar(@RequestBody @Valid AutorDTO dto) {
 //            var autorEntidade = dto.mapearParaAutor();
         Autor autor = mapper.toEntity(dto);
@@ -41,6 +38,7 @@ public class AutorController implements GenericController {
 
     //Obter autor pelo id
     @GetMapping("{id}")
+    @PreAuthorize("hasAnyRole('OPERADOR', 'GERENTE')")
     public ResponseEntity<AutorDTO> obterDetalhes(@PathVariable("id") String id) {
         var idAutor = UUID.fromString(id);
 
@@ -51,6 +49,7 @@ public class AutorController implements GenericController {
     }
 
     @DeleteMapping("{id}")
+    @PreAuthorize("hasRole('GERENTE')")
     public ResponseEntity<Object> deletar(@PathVariable("id") String id) {
         //Encontrando o usuario pelo o id do parametor id
         var idAutor = UUID.fromString(id);
@@ -65,6 +64,7 @@ public class AutorController implements GenericController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('OPERADOR', 'GERENTE')")
     public ResponseEntity<List<AutorDTO>> pesquisar(
             @RequestParam(value = "nome", required = false) String nome,
             @RequestParam(value = "nacionalidade", required = false) String nacionalidade) {
@@ -79,6 +79,7 @@ public class AutorController implements GenericController {
     }
 
     @PutMapping("{id}")
+    @PreAuthorize("hasRole('GERENTE')")
     public ResponseEntity<Object> atualizar(
             @PathVariable("id") String id, @RequestBody @Valid AutorDTO dto) {
 

@@ -1,10 +1,7 @@
 package com.weberth.libraryapi.controller;
-
 import com.weberth.libraryapi.controller.dto.CadastroLivroDTO;
-import com.weberth.libraryapi.controller.dto.ErrorResposta;
 import com.weberth.libraryapi.controller.dto.ResultadoPesquisaLivroDTO;
 import com.weberth.libraryapi.controller.mappers.LivroMapper;
-import com.weberth.libraryapi.exceptions.RegistroDuplicadoException;
 import com.weberth.libraryapi.model.GeneroLivro;
 import com.weberth.libraryapi.model.Livro;
 import com.weberth.libraryapi.service.LivroService;
@@ -12,10 +9,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.net.URI;
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -26,6 +21,8 @@ public class LivroController implements GenericController {
     private final LivroMapper mapper;
 
     @PostMapping
+    //Os dois vão poder salvar livro
+    @PreAuthorize("hasAnyRole('OPERADOR', 'GERENTE')")
     public ResponseEntity<Object> salvar(@RequestBody @Valid CadastroLivroDTO dto) {
         //Mapear dto para entidade
         Livro livro = mapper.toEntity(dto);
@@ -38,6 +35,7 @@ public class LivroController implements GenericController {
     }
 
     @GetMapping("{id}")
+    @PreAuthorize("hasAnyRole('OPERADOR', 'GERENTE')")
     public ResponseEntity<ResultadoPesquisaLivroDTO> obterDetalhes(
             @PathVariable("id") String id) {
         return service.obterPorId(UUID.fromString(id)).map(livro -> {
@@ -47,6 +45,7 @@ public class LivroController implements GenericController {
     }
 
     @DeleteMapping("{id}")
+    @PreAuthorize("hasAnyRole('OPERADOR', 'GERENTE')")
     public ResponseEntity<Object> deletar(
             @PathVariable("id") String id) {
         return service.obterPorId(UUID.fromString(id)).map(
@@ -57,6 +56,7 @@ public class LivroController implements GenericController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('OPERADOR', 'GERENTE')")
     public ResponseEntity<Page<ResultadoPesquisaLivroDTO>> pesquisa(
             @RequestParam(value = "isbn", required = false) String isbn,
             @RequestParam(value = "titulo", required = false) String titulo,
@@ -75,6 +75,7 @@ public class LivroController implements GenericController {
     }
 
     @PutMapping("{id}")
+    @PreAuthorize("hasAnyRole('OPERADOR', 'GERENTE')")
     public ResponseEntity<Object> atualizar(@PathVariable("id") String id, @RequestBody @Valid CadastroLivroDTO dto){
         return  service.obterPorId(UUID.fromString(id)).map(livro -> {
             Livro entidadeAux = mapper.toEntity(dto);

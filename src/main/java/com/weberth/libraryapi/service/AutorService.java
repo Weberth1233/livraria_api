@@ -3,8 +3,10 @@ package com.weberth.libraryapi.service;
 import com.weberth.libraryapi.controller.dto.AutorDTO;
 import com.weberth.libraryapi.exceptions.OperacaoNaoPermitidaException;
 import com.weberth.libraryapi.model.Autor;
+import com.weberth.libraryapi.model.Usuario;
 import com.weberth.libraryapi.repository.AutorRepository;
 import com.weberth.libraryapi.repository.LivroRepository;
+import com.weberth.libraryapi.security.SecurityService;
 import com.weberth.libraryapi.validator.AutorValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Example;
@@ -19,20 +21,16 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class AutorService {
-
     private final AutorRepository repository;
     private final AutorValidator validator;
     private final LivroRepository livroRepository;
-
-//    public AutorService(AutorRepository repository, AutorValidator validator, LivroRepository livroRepository) {
-//        this.repository = repository;
-//        this.validator = validator;
-//        this.livroRepository = livroRepository;
-//    }
+    private final SecurityService securityService;
 
     public Autor salvar(Autor autor)
     {
         validator.validar(autor);
+        Usuario usuario = securityService.obterUsuarioLogado();
+        autor.setUsuario(usuario);
         return repository.save(autor);
     }
 

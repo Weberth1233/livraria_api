@@ -1,5 +1,6 @@
 package com.weberth.libraryapi.model;
 
+import com.weberth.libraryapi.controller.dto.UsuarioDTO;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.ToString;
@@ -54,6 +55,7 @@ public class Livro {
     @Column(name = "data_atualizacao")
     private LocalDateTime dataAtualizacao;
 
-    @Column(name = "id_usuario")
-    private UUID idUsuario;
+    @ManyToOne()
+    @JoinColumn(name = "id_usuario")
+    private Usuario usuario;
 }

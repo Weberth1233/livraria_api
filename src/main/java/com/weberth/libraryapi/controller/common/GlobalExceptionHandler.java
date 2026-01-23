@@ -7,6 +7,7 @@ import com.weberth.libraryapi.exceptions.OperacaoNaoPermitidaException;
 import com.weberth.libraryapi.exceptions.RegistroDuplicadoException;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -19,12 +20,12 @@ import java.util.List;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    @ResponseStatus(HttpStatus.UNPROCESSABLE_CONTENT)
+    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
     public ErrorResposta hendleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         List<FieldError> fieldErrors = e.getFieldErrors();
         List<ErroCampo> listaErros = fieldErrors.
                 stream().map(fe -> new ErroCampo(fe.getField(), fe.getDefaultMessage())).toList();
-        return new ErrorResposta(HttpStatus.UNPROCESSABLE_CONTENT.value(), "Erro de validação!", listaErros);
+        return new ErrorResposta(HttpStatus.UNPROCESSABLE_ENTITY.value(), "Erro de validação!", listaErros);
 
     }
 
@@ -41,13 +42,19 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(CampoInvalidoException.class)
-    @ResponseStatus(HttpStatus.UNPROCESSABLE_CONTENT)
+    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
     public ErrorResposta handleCampoInvalidoException(CampoInvalidoException e){
         return new ErrorResposta
-                (HttpStatus.UNPROCESSABLE_CONTENT.value(),
+                (HttpStatus.UNPROCESSABLE_ENTITY.value(),
                         "Erro de validação!",
                         List.of(new ErroCampo(e.getCampo(), e.getMessage())));
 
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ErrorResposta handleAccesDeniedException(AccessDeniedException e){
+        return new ErrorResposta(HttpStatus.FORBIDDEN.value(), "Acesso Negado.", List.of());
     }
 
     @ExceptionHandler(RuntimeException.class)

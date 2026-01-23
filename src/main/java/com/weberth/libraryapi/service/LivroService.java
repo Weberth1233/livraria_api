@@ -2,8 +2,10 @@ package com.weberth.libraryapi.service;
 
 import com.weberth.libraryapi.model.GeneroLivro;
 import com.weberth.libraryapi.model.Livro;
+import com.weberth.libraryapi.model.Usuario;
 import com.weberth.libraryapi.repository.LivroRepository;
 import com.weberth.libraryapi.repository.specs.LivroSpecs;
+import com.weberth.libraryapi.security.SecurityService;
 import com.weberth.libraryapi.validator.LivroValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -22,10 +24,13 @@ public class LivroService {
 
     private final LivroRepository repository;
     private final LivroValidator validator;
+    private final SecurityService securityService;
 
 
     public Livro salvar(Livro livro){
         validator.validar(livro);
+        Usuario usuario = securityService.obterUsuarioLogado();
+        livro.setUsuario(usuario);
         return repository.save(livro);
     }
 
